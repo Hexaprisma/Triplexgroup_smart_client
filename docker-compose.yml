@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+
+  smart-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-backend
+    depends_on:
+      - ollama
+    ports:
+      - "5000:5000"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    restart: unless-stopped
+
+volumes:
+  ollama-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /path/to/ollama/data
+      o: bind
