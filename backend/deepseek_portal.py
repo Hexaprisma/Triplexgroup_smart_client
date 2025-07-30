@@ -2,6 +2,9 @@ import requests
 import database_handler
 import sqlite3
 
+test_prompt = """Hello, please introduce yourself and tell me what you can do."""
+
+
 starting_prompt = """
 You are a expert customer service agent from Triple X Group, acting as an assistant.
 Do not say anything unknown, do not guess any value, customer name, phone number and date of birth.
@@ -26,7 +29,17 @@ User: Hello!
 AI: Hello! How can I help you today?
 
 """
+response = requests.post(
+    "http://localhost:11434/api/generate",
+    json={
+        "model": "deepseek-r1:32b",
+        "role": "user",
+        "prompt": test_prompt,
+    },
+)
 
+
+"""
 response = requests.post(
     "http://localhost:11434/api/generate",
     json={
@@ -35,7 +48,7 @@ response = requests.post(
         "prompt": starting_prompt,
     },
 )
-
+"""
 
 def read_database(query):
     """Read conversations from the database."""
@@ -97,3 +110,6 @@ while True:
             print("Deepseek :", response)
         else:
             print("Failed to get a response from the AI.")
+
+
+
