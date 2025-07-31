@@ -38,6 +38,8 @@ response = requests.post(
     },
 )
 
+print("Deepseek: " response.json()["response"])
+
 
 """
 response = requests.post(
