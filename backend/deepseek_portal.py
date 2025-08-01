@@ -55,9 +55,10 @@ response = requests.post(
     },
 )
 
-raw_output = response.json()["response"]
-cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
-print("Deepseek: ", cleaned_output)
+raw_output = response.json()["message"]["content"]
+# Clean the output by removing <think> tags and their content
+#cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
+print("Deepseek: ", raw_output)
 
 
 def read_database(query):
@@ -108,7 +109,7 @@ def add_message_to_ai(message):
             "stream": False,
         }
     )
-    return response.json()["response"] if response.status_code == 200 else None
+    return response if response.status_code == 200 else None
 
 while True:
     user_input = input("Enter something (or 'exit' to quit): ")
@@ -118,8 +119,8 @@ while True:
     else:
         response = add_message_to_ai(user_input)
         if response:
-            raw_output = response.json()["response"]
-            cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
+            raw_output = response.json()["message"]["content"]
+            #cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
             print("Deepseek :", response)
         else:
             print("Failed to get a response from the AI.")
