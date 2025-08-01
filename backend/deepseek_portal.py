@@ -33,12 +33,12 @@ response = requests.post(
     "http://localhost:11434/api/generate",
     json={
         "model": "deepseek-r1:32b",
-        "role": "user",
         "prompt": test_prompt,
+        "stream": False,
     },
 )
 
-print("Deepseek: " response.json()["response"])
+print("Deepseek: ", response.json()["response"])
 
 
 """
