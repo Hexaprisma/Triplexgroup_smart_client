@@ -46,7 +46,7 @@ print("Deepseek: ", cleaned_output)
 
 
 response = requests.post(
-    "http://localhost:11434/api/generate",
+    "http://localhost:11434/api/chat",
     json={
         "model": "deepseek-r1:32b",
         "role": "system",
@@ -100,7 +100,7 @@ def check_order_status(order_id):
 def add_message_to_ai(message):
     """Add a message to the AI's conversation history."""
     response = requests.post(
-        "http://localhost:11434/api/add_message",
+        "http://localhost:11434/api/chat",
         json={
             "model": "deepseek-r1:32b",
             "role": "user",
