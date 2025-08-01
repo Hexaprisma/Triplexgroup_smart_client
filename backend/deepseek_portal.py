@@ -1,6 +1,7 @@
 import requests
 import database_handler
 import sqlite3
+import re
 
 test_prompt = """Hello, please introduce yourself and tell me what you can do."""
 
@@ -38,19 +39,26 @@ response = requests.post(
     },
 )
 
-print("Deepseek: ", response.json()["response"])
+raw_output = response.json()["response"]
+cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
+print("Deepseek: ", cleaned_output)
 
 
-"""
+
 response = requests.post(
     "http://localhost:11434/api/generate",
     json={
         "model": "deepseek-r1:32b",
         "role": "system",
         "prompt": starting_prompt,
+        "stream": False,
     },
 )
-"""
+
+raw_output = response.json()["response"]
+cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
+print("Deepseek: ", cleaned_output)
+
 
 def read_database(query):
     """Read conversations from the database."""
@@ -96,7 +104,8 @@ def add_message_to_ai(message):
         json={
             "model": "deepseek-r1:32b",
             "role": "user",
-            "prompt": message
+            "prompt": message,
+            "stream": False,
         }
     )
     return response.json()["response"] if response.status_code == 200 else None
@@ -109,6 +118,8 @@ while True:
     else:
         response = add_message_to_ai(user_input)
         if response:
+            raw_output = response.json()["response"]
+            cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
             print("Deepseek :", response)
         else:
             print("Failed to get a response from the AI.")
