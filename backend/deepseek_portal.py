@@ -58,7 +58,7 @@ response = requests.post(
 raw_output = response.json()["message"]["content"]
 # Clean the output by removing <think> tags and their content
 #cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
-print("Deepseek: ", raw_output)
+print("Deepseek: ", response.json())
 
 
 def read_database(query):
