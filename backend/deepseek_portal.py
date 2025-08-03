@@ -3,7 +3,6 @@ import database_handler
 import sqlite3
 import re
 
-test_prompt = """Hello, please introduce yourself and tell me what you can do."""
 
 
 starting_prompt = """
@@ -30,35 +29,20 @@ User: Hello!
 AI: Hello! How can I help you today?
 
 """
-response = requests.post(
-    "http://localhost:11434/api/generate",
-    json={
-        "model": "deepseek-r1:32b",
-        "prompt": test_prompt,
-        "stream": False,
-    },
-)
-
-raw_output = response.json()["response"]
-cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
-print("Deepseek: ", cleaned_output)
 
 
-
-response = requests.post(
-    "http://localhost:11434/api/chat -d",
-    json={
-        "model": "deepseek-r1:32b",
-        "role": "system",
-        "prompt": starting_prompt,
-        "stream": False,
-    },
-)
-
+payload = {
+    "model": "deepseek-r1:32b",  # Change this to your installed model
+    "messages": [
+        {"role": "user", "content": starting_prompt},
+    ],
+    "stream": False  # Set True for token-by-token streaming
+}
+response = requests.post("http://localhost:11434/api/chat", json=payload)
 raw_output = response.json()["message"]["content"]
 # Clean the output by removing <think> tags and their content
-#cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
-print("Deepseek: ", response.json())
+cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
+print("Deepseek: ", cleaned_output)
 
 
 def read_database(query):
@@ -100,16 +84,15 @@ def check_order_status(order_id):
     
 def add_message_to_ai(message):
     """Add a message to the AI's conversation history."""
-    response = requests.post(
-        "http://localhost:11434/api/chat -d",
-        json={
-            "model": "deepseek-r1:32b",
-            "role": "user",
-            "prompt": message,
-            "stream": False,
-        }
-    )
-    return response if response.status_code == 200 else None
+    payload = {
+    "model": "deepseek-r1:32b",  # Change this to your installed model
+    "messages": [
+        {"role": "user", "content": message},
+    ],
+    "stream": False  # Set True for token-by-token streaming
+    }
+    response = requests.post("http://localhost:11434/api/chat", json=payload)
+    return response
 
 while True:
     user_input = input("Enter something (or 'exit' to quit): ")
@@ -120,8 +103,8 @@ while True:
         response = add_message_to_ai(user_input)
         if response:
             raw_output = response.json()["message"]["content"]
-            #cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
-            print("Deepseek :", response)
+            cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).strip()
+            print("Deepseek :", cleaned_output)
         else:
             print("Failed to get a response from the AI.")
 
