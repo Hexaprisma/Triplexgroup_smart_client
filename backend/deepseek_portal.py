@@ -2,14 +2,19 @@ import requests
 import database_handler
 import sqlite3
 import re
+import json
 
-
+#now replaced with the calendar manager method
+#conn = sqlite3.connect("data/shopData/TestingData.db")
+database_manager = database_handler.database_handler()
+conn = database_manager.conn
+print("Opened database successfully")
 
 starting_prompt = """
 You are a expert customer service agent from Triple X Group, acting as an assistant.
 Do not say anything unknown, do not guess any value, customer name, phone number and date of birth.
 Start by a friendly greeting, and ask for specific service the customer need.
-You can either respond directly, or suggest calling the read_database function.
+You can either respond directly, or suggest calling function depending on the customer's need.
 
 Use this format ONLY if needed:
 FunctionCall: {"name": "read_database", "args": {"query": "<query>"}}
@@ -17,10 +22,10 @@ FunctionCall: {"name": "read_database", "args": {"query": "<query>"}}
 Examples:
 
 User: What's your company?
-FunctionCall: {"name": "read_database", "args": {"query": "company information"}}
+FunctionCall: {"name": "comapny_info", "args": {"query": "company information"}}
 
 User: What is the status of order 12345?
-FunctionCall: {"name": "read_database", "args": {"query": "status of order 12345"}}
+FunctionCall: {"name": "check_order", "args": {"query": "status of order 12345"}}
 
 User: How many users signed up last week?
 AI: Due to privacy concerns, I can't provide that information.
@@ -34,7 +39,7 @@ AI: Hello! How can I help you today?
 payload = {
     "model": "deepseek-r1:32b",  # Change this to your installed model
     "messages": [
-        {"role": "user", "content": starting_prompt},
+        {"role": "system", "content": starting_prompt},
     ],
     "stream": False  # Set True for token-by-token streaming
 }
@@ -45,21 +50,11 @@ cleaned_output = re.sub(r'<think>.*?</think>', '', raw_output, flags=re.DOTALL).
 print("Deepseek: ", cleaned_output)
 
 
-def read_database(query):
-    """Read conversations from the database."""
-    try:
-        conn = sqlite3.connect('conversations.db')
-        c = conn.cursor()
-        c.execute("SELECT * FROM conversations WHERE query=?", (query,))
-        rows = c.fetchall()
-        conn.close()
-        return rows
-    except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
-        return []
-        print("Database is ready.")
-    except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+def company_info(query):
+    print("Retrieving company info...")
+
+def check_order(query):
+    print("Checking order status...")
 
 def check_service_availability(service_name):
     """Check if a service is available."""

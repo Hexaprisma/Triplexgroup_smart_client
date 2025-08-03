@@ -3,9 +3,9 @@ import sqlite3
 
 class database_handler:
 
-    def __init__(self, db_path = 'data/company_info.db'):
+    def __init__(self, db_path = '/home/edows/Documents/smart_client_prj/Triplexgroup_smart_client/data/company_info.db'):
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
-        self.create_table()
+        #self.create_table()
 
     def _load_service_table(self):
         self.conn.execute('''
